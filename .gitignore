@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Data 
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.lock
+data/tranco.csv
+export/
+
+# Logs and demo output
+logs/*.log
+results/demo/
+results/pilot/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

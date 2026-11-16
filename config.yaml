@@ -1,0 +1,49 @@
+# Database
+db_path: data/freshness.db
+
+# Site sampling (M1) 
+tranco_csv: data/tranco.csv      
+tranco_list_id: "Q2VV4" 
+seed: 42      
+n_sites: 2000    
+rank_groups:    
+  top10k: [1, 10000]
+  10k-100k: [10001, 100000]
+max_resources_per_site: 8      
+sampling_concurrency: 50       
+
+# Polite fetcher (M2) 
+user_agent: "FreshnessStudy/1.0 (research crawler; +https://github.com/Nahian1504/Measuring-the-Reliability-of-HTTP-Freshness-Signals-Against-Observed-Web-Content-Changes)"
+robots_token: "FreshnessStudy"   
+max_concurrency: 50      # At most 50 requests at the same time
+per_domain_gap_s: 2.0      # Wait 2 s between requests to the same site
+timeout_s: 20        # Give up on a request after 20 s
+max_redirects: 5
+retries: 1        # One retry after a failure
+max_body_mb: 10       # Skip files larger than 10 MB
+round_interval_h: 4       # Main rounds every 4 hours 
+robots_recheck_every_rounds: 6   # Rre read robots.txt once a day 
+conditional_share: 0.05     # 5% get a conditional request
+back_to_back_share: 0.05      # 5% are fetched twice in a row (CDN check)
+hourly_count: 100        # 100 resources are fetched every hour
+
+# Blocked sites
+blocked_domains: []
+
+# Change detector (M4) 
+shingle_words: 5  
+minhash_perm: 128    
+theta: 0.95       # A change is "meaningful" if similarity < theta
+theta_sweep: [0.90, 0.95, 0.98] 
+
+# Analysis (M5) 
+bootstrap_resamples: 1000
+bootstrap_seed: 42
+results_dir: results
+
+# Simulator (M6)
+train_days: 14    
+fixed_intervals_h: [4, 8, 12, 24, 48]
+poisson_freshness_targets: [0.5, 0.7, 0.8, 0.9, 0.95, 0.98, 0.99]
+min_interval_h: 4
+max_interval_h: 168
