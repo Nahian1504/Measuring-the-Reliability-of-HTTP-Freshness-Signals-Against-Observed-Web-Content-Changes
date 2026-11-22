@@ -1,0 +1,80 @@
+rate,description,group_by,group,events,pairs,sites,value,ci_low,ci_high
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),all,all,14272,302759,1597,0.04713980426676003,0.04057951978989457,0.0536488300254041
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,article,2654,21612,293,0.12280214695539515,0.08767094299179662,0.15704436450252307
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,feed,443,5427,126,0.08162889257416621,0.051378499911349504,0.11725234604601623
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,homepage,1380,17390,392,0.07935595169637723,0.058234215771606916,0.10181304539070218
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,image,2118,63265,1146,0.033478226507547615,0.026084108733509127,0.041521206691694526
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,script,4953,127520,1332,0.038840966122961104,0.03269318469554972,0.045279647076889314
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),type,stylesheet,2724,67545,1247,0.04032866977570509,0.03268115135001482,0.04755694369582516
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),fingerprinted,fingerprinted,3994,93334,823,0.04279255148177513,0.0334776611727163,0.052877500242775134
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),fingerprinted,not fingerprinted,10278,209425,1496,0.04907723528709562,0.041210727716944125,0.056453722109037
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),etag_strength,strong,8384,148535,1147,0.05644460901471034,0.04589384852950478,0.06724917840440071
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),etag_strength,weak,5888,154224,1040,0.03817823425666563,0.031950553764152664,0.04511180678044618
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),rank_group,10k-100k,7089,150283,801,0.04717100403904633,0.03830366956178901,0.057631813922924276
+etag_false_change,ETag changed but bytes did not (share of unchanged pairs),rank_group,top10k,7183,152476,796,0.047109053228049,0.03959860224358512,0.05584806691957321
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),all,all,1877,22071,369,0.0850437225318291,0.053549284393951756,0.12128694158769616
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,article,1054,12071,191,0.08731670946897523,0.047188630075006906,0.1325696618819128
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,feed,138,1086,49,0.1270718232044199,0.018951896138288512,0.27302607766801734
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,homepage,616,7893,237,0.07804383631065501,0.04117815995862121,0.12201351425604086
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,image,67,199,15,0.33668341708542715,0.13793103448275862,0.634578136463683
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,script,2,729,53,0.0027434842249657062,0.0,0.011091860219648952
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),type,stylesheet,0,93,33,0.0,0.0,0.0
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),fingerprinted,fingerprinted,33,325,36,0.10153846153846154,0.0,0.2844364351245085
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),fingerprinted,not fingerprinted,1844,21746,342,0.08479720408350962,0.053737813494195874,0.12065147315506168
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),etag_strength,strong,1877,22071,369,0.0850437225318291,0.053549284393951756,0.12128694158769616
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),rank_group,10k-100k,766,11520,190,0.06649305555555556,0.030373347179470593,0.11103653615217028
+strong_etag_missed_change,Strong ETag unchanged but bytes changed (share of changed pairs),rank_group,top10k,1111,10551,179,0.10529807601175244,0.05724096381686328,0.1576749955844184
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,all,all,462,4868,221,0.09490550534100246,0.04538543167777762,0.15029855324979544
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,article,114,834,52,0.1366906474820144,0.0,0.34706425978476496
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,feed,328,2004,71,0.16367265469061876,0.08604788357479777,0.2587795127367209
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,homepage,5,1442,77,0.0034674063800277394,0.0,0.012564201131842175
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,image,0,1,1,0.0,0.0,0.0
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,script,15,538,50,0.027881040892193308,0.0,0.08859362952405428
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,type,stylesheet,0,49,30,0.0,0.0,0.0
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,fingerprinted,fingerprinted,0,269,33,0.0,0.0,0.0
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,fingerprinted,not fingerprinted,462,4599,196,0.1004566210045662,0.04427241843700791,0.1628261467662727
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,etag_strength,weak,462,4868,221,0.09490550534100246,0.04538543167777762,0.15029855324979544
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,rank_group,10k-100k,215,1924,95,0.11174636174636175,0.03662297221563054,0.21276815604751617
+weak_etag_missed_meaningful,Weak ETag unchanged but a meaningful change happened,rank_group,top10k,247,2944,126,0.08389945652173914,0.02621502449964083,0.1657052157306084
+lm_false_change,Last-Modified changed without a meaningful change,all,all,52015,385418,1768,0.13495737095828425,0.12421943640098362,0.14635772189693105
+lm_false_change,Last-Modified changed without a meaningful change,type,article,23562,51228,526,0.4599437807449051,0.42122782180371127,0.500037082463685
+lm_false_change,Last-Modified changed without a meaningful change,type,feed,709,5861,138,0.12096911789796963,0.0854878158740243,0.1652816705964794
+lm_false_change,Last-Modified changed without a meaningful change,type,homepage,13280,34515,678,0.38476024916702883,0.35153852383391254,0.41874522800243663
+lm_false_change,Last-Modified changed without a meaningful change,type,image,3003,72398,1313,0.041479046382496755,0.03421380921779528,0.04895524585247004
+lm_false_change,Last-Modified changed without a meaningful change,type,script,7449,144878,1497,0.05141567387733127,0.0439254495599259,0.058962395628896894
+lm_false_change,Last-Modified changed without a meaningful change,type,stylesheet,4012,76538,1415,0.052418406543155036,0.04394684570136473,0.06190224397392518
+lm_false_change,Last-Modified changed without a meaningful change,fingerprinted,fingerprinted,7126,111826,952,0.06372399978538086,0.052633320650771365,0.07508107264904228
+lm_false_change,Last-Modified changed without a meaningful change,fingerprinted,not fingerprinted,44889,273592,1662,0.1640727799058452,0.15151686036581943,0.17767223681514988
+lm_false_change,Last-Modified changed without a meaningful change,etag_strength,none,28078,99884,675,0.2811060830563454,0.2512013114563681,0.3108517456691685
+lm_false_change,Last-Modified changed without a meaningful change,etag_strength,strong,12643,143681,1053,0.08799354124762494,0.07473060450938357,0.102119432319519
+lm_false_change,Last-Modified changed without a meaningful change,etag_strength,weak,11294,141853,948,0.07961763233770171,0.06764739851504155,0.09254832451751904
+lm_false_change,Last-Modified changed without a meaningful change,rank_group,10k-100k,24962,195478,901,0.1276972344713983,0.11455349816930668,0.1433678374959908
+lm_false_change,Last-Modified changed without a meaningful change,rank_group,top10k,27053,189940,867,0.14242918816468358,0.12838766721703515,0.15589037691900667
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,all,all,617,9189,429,0.06714550005441289,0.04031797410006719,0.09902619050534076
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,article,23,1171,78,0.01964133219470538,0.0,0.0631376915681073
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,feed,410,3608,131,0.11363636363636363,0.056502830389410535,0.18089903176146666
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,homepage,2,2902,172,0.0006891798759476223,0.0,0.0018552135605762767
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,image,87,198,24,0.4393939393939394,0.2338952993473943,0.6687136102536048
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,script,69,1161,105,0.059431524547803614,0.0007829031021479867,0.16339997276572107
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,type,stylesheet,26,149,60,0.174496644295302,0.0,0.40188340551629814
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,fingerprinted,fingerprinted,37,577,69,0.06412478336221837,0.0,0.16782281731474688
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,fingerprinted,not fingerprinted,580,8612,380,0.06734788666976312,0.04173805873792463,0.09998907073198073
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,etag_strength,none,78,3961,180,0.019691996970462006,0.006126234488661591,0.037620542369953186
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,etag_strength,strong,204,2348,160,0.0868824531516184,0.026996883683533254,0.16910107022378543
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,etag_strength,weak,335,2880,136,0.11631944444444445,0.052608183283364814,0.18593219453918827
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,rank_group,10k-100k,325,4316,212,0.07530120481927711,0.035395097201888236,0.12403145113361799
+lm_missed_change,Last-Modified unchanged but a meaningful change happened,rank_group,top10k,292,4873,217,0.059922019289965114,0.025693395340754665,0.09899453753558947
+cc_early_change,Changed while Cache-Control said it was still fresh,all,all,10503,237655,1357,0.044194315288969305,0.036009810031857874,0.05173233507323019
+cc_early_change,Changed while Cache-Control said it was still fresh,type,article,5782,13323,147,0.4339863394130451,0.3654081198843225,0.49922540895851547
+cc_early_change,Changed while Cache-Control said it was still fresh,type,feed,332,1419,29,0.2339675828047921,0.12969571520493678,0.36448878241039767
+cc_early_change,Changed while Cache-Control said it was still fresh,type,homepage,3241,7792,154,0.4159394250513347,0.35558471514007306,0.47976278678543965
+cc_early_change,Changed while Cache-Control said it was still fresh,type,image,185,52223,984,0.003542500430844647,0.0015857303742084481,0.005833791890357587
+cc_early_change,Changed while Cache-Control said it was still fresh,type,script,819,106274,1170,0.007706494532999605,0.0041049286385568765,0.011616899175002455
+cc_early_change,Changed while Cache-Control said it was still fresh,type,stylesheet,144,56624,1088,0.002543091268719977,0.0014591044470086234,0.003957039674353326
+cc_early_change,Changed while Cache-Control said it was still fresh,fingerprinted,fingerprinted,557,93398,823,0.005963725133300499,0.0029031633068710336,0.009967966359771806
+cc_early_change,Changed while Cache-Control said it was still fresh,fingerprinted,not fingerprinted,9946,144257,1165,0.0689463942824265,0.057684787152704003,0.08132902057805166
+cc_early_change,Changed while Cache-Control said it was still fresh,etag_strength,none,7246,59119,466,0.12256634922782862,0.09781874973538272,0.14697173672969105
+cc_early_change,Changed while Cache-Control said it was still fresh,etag_strength,strong,1724,74306,699,0.023201356552633706,0.015173975591846613,0.033429359166895864
+cc_early_change,Changed while Cache-Control said it was still fresh,etag_strength,weak,1533,104230,770,0.01470785762256548,0.00882692269272256,0.021868716414676196
+cc_early_change,Changed while Cache-Control said it was still fresh,rank_group,10k-100k,5066,120933,684,0.041890964418314275,0.03140707272108044,0.05268775595612572
+cc_early_change,Changed while Cache-Control said it was still fresh,rank_group,top10k,5437,116722,673,0.046580764551669776,0.035134370921866775,0.05753129153191644

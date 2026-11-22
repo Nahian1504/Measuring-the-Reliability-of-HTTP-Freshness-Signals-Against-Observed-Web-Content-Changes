@@ -35,10 +35,15 @@ def load_traces(con):
     return df, start
 
 
+def _clean(col) -> list:
+    return [v if isinstance(v, str) and v else None for v in col]
+
+
 def group_of(rtype: str, fingerprinted: int, content_type: str | None) -> str:
     if fingerprinted:
         return "fingerprinted"
-    if rtype in ("homepage", "article") or "html" in (content_type or "").lower():
+    ctype = content_type if isinstance(content_type, str) else ""
+    if rtype in ("homepage", "article") or "html" in ctype.lower():
         return "html"
     return "other"
 
@@ -63,7 +68,7 @@ def split_traces(df: pd.DataFrame, t_split: float):
             s = te_idx[0] - 1 if te_idx[0] > 0 else te_idx[0]
             dd = d.iloc[s:]
             test.append(Trace(rid, grp, dd.fetched_at.to_numpy(float), version[s:],
-                              dd.etag.tolist(), dd.last_modified.tolist(), dd.lifetime_s.tolist(),
+                              _clean(dd.etag), _clean(dd.last_modified), dd.lifetime_s.tolist(),
                               dd["size"].fillna(0).to_numpy(float)))
     return train, test
 

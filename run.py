@@ -103,6 +103,7 @@ def main(argv=None):
         dest = args.extra or os.path.join(os.path.dirname(cfg.db_path), "backup-" + _t.strftime("%Y%m%d-%H%M") + ".db")
         with sqlite3.connect(dest) as out:
             con.backup(out)
+        print(f"Backup written to {dest} ({os.path.getsize(dest) / 1e6:.0f} MB). Copy it to OneDrive or a USB drive.")
     elif cmd == "demo":
         from freshness.analysis import run_analysis
         from freshness.demo import make_demo
@@ -115,7 +116,12 @@ def main(argv=None):
         build_pairs(cfg, con)
         run_analysis(cfg, con, out)
         simulate(cfg, con, out)
+        from freshness.dashboard import build_dashboard
+        build_dashboard(cfg, con, out)
         print(f"\nDemo outputs are in {out}  (FAKE data)")
+    elif cmd == "dashboard":
+        from freshness.dashboard import build_dashboard
+        build_dashboard(cfg, con, args.out)
     else:
         p.print_help()
         sys.exit(f"Unknown command: {cmd}")

@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTTP Freshness Dashboard</title>
+<style>
+:root{
+  --bg:#f6f7f9;--panel:#ffffff;--ink:#16191d;--muted:#5d6670;--line:#e3e6ea;--grid:#eef0f3;
+  --accent:#2563eb;--accent-soft:#dbe6fd;--good:#15803d;--warn:#b45309;--bad:#b91c1c;
+  --s1:#2563eb;--s2:#d97706;--s3:#059669;--s4:#7c3aed;--s5:#db2777;--s6:#64748b;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1216;--panel:#171b21;--ink:#e8ebef;--muted:#9aa3ad;--line:#2a3038;--grid:#20262d;
+  --accent:#60a5fa;--accent-soft:#1e3a5f;--good:#4ade80;--warn:#fbbf24;--bad:#f87171;
+  --s1:#60a5fa;--s2:#fbbf24;--s3:#34d399;--s4:#a78bfa;--s5:#f472b6;--s6:#94a3b8;}}
+:root[data-theme="dark"]{
+  --bg:#0f1216;--panel:#171b21;--ink:#e8ebef;--muted:#9aa3ad;--line:#2a3038;--grid:#20262d;
+  --accent:#60a5fa;--accent-soft:#1e3a5f;--good:#4ade80;--warn:#fbbf24;--bad:#f87171;
+  --s1:#60a5fa;--s2:#fbbf24;--s3:#34d399;--s4:#a78bfa;--s5:#f472b6;--s6:#94a3b8;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 24px 0;max-width:1180px;margin:0 auto;position:relative}
+.theme{position:absolute;right:24px;top:20px;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.theme button{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;padding:5px 11px;cursor:pointer}
+.theme button.on{background:var(--accent-soft);color:var(--ink);font-weight:600}
+@media (max-width:820px){.theme{position:static;margin:0 0 10px;width:max-content}}
+h1{font-size:20px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin:16px 0 0;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:8px 12px;font:inherit;cursor:pointer}
+nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:16px 24px 48px}
+section{display:none}section.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 16px}
+.card h2{font-size:15px;margin:0 0 4px}
+.card p.note{color:var(--muted);margin:0 0 12px;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .v{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:12px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
+select,input[type=search]{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+input[type=search]{min-width:240px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td.url{text-align:left;max-width:420px;overflow:hidden;text-overflow:ellipsis}
+th{color:var(--muted);font-weight:600;cursor:pointer;user-select:none;position:sticky;top:0;background:var(--panel)}
+tbody tr:hover{background:var(--grid)}
+tr.pick{background:var(--accent-soft)!important}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+.tag.reliable{color:var(--good)}.tag.unreliable{color:var(--bad)}.tag.mostly{color:var(--warn)}
+svg text{fill:var(--ink);font-size:12px}
+svg .muted{fill:var(--muted)}
+svg .grid{stroke:var(--grid)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.empty{color:var(--muted);font-style:italic;padding:8px 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:820px){.two{grid-template-columns:1fr}header,main{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="theme" id="theme" role="group" aria-label="Color theme"><button data-t="light">Light</button><button data-t="dark">Dark</button><button data-t="system">System</button></div>
+  <h1>HTTP Freshness Signals: Results Dashboard</h1>
+  <div class="sub" id="subtitle"></div>
+  <nav id="tabs"></nav>
+</header>
+<main>
+  <section id="overview">
+    <div class="kpis" id="kpis"></div>
+    <div class="card"><h2>Collection health</h2>
+      <p class="note">Main rounds per day (6 expected, one every 4 hours) and the share of fetches that succeeded.</p>
+      <div id="health"></div></div>
+  </section>
+
+  <section id="rq1">
+    <div class="card"><h2>RQ1 &middot; How often each signal is present</h2>
+      <p class="note">Share of successful responses. Bars show the 95% site-level bootstrap interval.</p>
+      <div id="presence"></div></div>
+    <div class="card"><h2>RQ1 &middot; How often each signal is wrong</h2>
+      <p class="note">Each rate is events / eligible pairs of consecutive fetches. Whiskers: 95% site-level bootstrap interval.</p>
+      <div class="row"><label>Break down by <select id="rateGroup"></select></label></div>
+      <div id="rates"></div></div>
+  </section>
+
+  <section id="rq2">
+    <div class="card"><h2>RQ2 &middot; How many byte-level HTML changes are meaningful</h2>
+      <p class="note">Share of HTML pairs whose bytes changed where the main text also changed meaningfully (similarity below &theta;).</p>
+      <div class="row"><label>Break down by <select id="rq2Group"></select></label></div>
+      <div id="rq2chart"></div></div>
+  </section>
+
+  <section id="cats">
+    <div class="card"><h2>Pair categories (Table 1) by resource type</h2>
+      <p class="note">Share of consecutive-fetch pairs in each category. Darker cells are larger shares.</p>
+      <div id="cattable"></div></div>
+  </section>
+
+  <section id="rq3">
+    <div class="card"><h2>RQ3 &middot; Staleness and cost of re-fetch policies</h2>
+      <p class="note">Held-out test days. Lower and further left is better. The star is "obey headers".</p>
+      <div class="row"><label>Resource group <select id="rq3Group"></select></label></div>
+      <div id="rq3chart"></div><div id="rq3legend" class="legend"></div></div>
+    <div class="card"><h2>Equal-cost comparison</h2>
+      <p class="note">Staleness of each policy at the same requests per day as "obey headers".</p>
+      <div id="rq3eq"></div></div>
+    <div class="card"><h2>T4 check &middot; change-rate estimator on synthetic traces</h2>
+      <div id="t4"></div></div>
+  </section>
+
+  <section id="sites">
+    <div class="card"><h2>Site explorer</h2>
+      <p class="note">Problems = strong-ETag inconsistencies + missed changes. Label is rule-based:
+        reliable (0 problems), mostly reliable (&lt;1% of pairs), unreliable, or too little data (&lt;10 pairs). Click a site to see its resources.</p>
+      <div class="row">
+        <input type="search" id="siteSearch" placeholder="Search a domain, e.g. wikipedia">
+        <label>Show <select id="siteLabel"><option value="">all labels</option><option>reliable</option>
+          <option>mostly reliable</option><option>unreliable</option><option>too little data</option></select></label>
+        <span class="sub" id="siteCount"></span>
+      </div>
+      <div class="scroll" id="siteTable"></div></div>
+    <div class="card"><h2 id="resTitle">Resources</h2>
+      <div class="scroll" id="resTable"><div class="empty">Click a site above.</div></div></div>
+  </section>
+
+  <section id="quality"><div id="qualityCards"></div></section>
+</main>
+
+<script>
+const D = null;
+const $ = s => document.querySelector(s);
+const el = (t, a = {}, kids = []) => { const e = document.createElement(t);
+  for (const [k, v] of Object.entries(a)) { if (k === 'text') e.textContent = v; else if (k === 'cls') e.className = v; else e.setAttribute(k, v); }
+  for (const c of [].concat(kids)) if (c != null) e.append(c); return e; };
+const NS = 'http://www.w3.org/2000/svg';
+const sv = (t, a = {}, txt) => { const e = document.createElementNS(NS, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); if (txt != null) e.textContent = txt; return e; };
+const pct = (v, d = 1) => v == null ? '–' : (v * 100).toFixed(d) + '%';
+const num = v => v == null ? '–' : Number(v).toLocaleString();
+const nice = s => String(s).replace(/_/g, ' ');
+const COLORS = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)'];
+
+// light / dark theme 
+function setTheme(t) { if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  document.querySelectorAll('#theme button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  try { localStorage.setItem('theme', t); } catch (e) {} }
+document.querySelectorAll('#theme button').forEach(b => b.onclick = () => setTheme(b.dataset.t));
+let savedTheme = 'system'; try { savedTheme = localStorage.getItem('theme') || 'system'; } catch (e) {}
+setTheme(savedTheme);
+
+// tabs 
+const TABS = [['overview', 'Overview'], ['rq1', 'RQ1 Signals'], ['rq2', 'RQ2 Meaningful change'], ['cats', 'Categories'],
+  ['rq3', 'RQ3 Policies'], ['sites', 'Site explorer'], ['quality', 'Data quality']];
+TABS.forEach(([id, name], i) => { const b = el('button', { text: name }); b.onclick = () => show(id); b.dataset.id = id; $('#tabs').append(b); });
+function show(id) { document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === id));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+  try { localStorage.setItem('tab', id); } catch (e) {} }
+
+// charts 
+function dotWhisker(box, rows, opt = {}) {
+  box.innerHTML = '';
+  if (!rows.length) { box.append(el('div', { cls: 'empty', text: 'No data yet.' })); return; }
+  const W = Math.max(box.clientWidth || 900, 360), labW = Math.min(300, W * 0.38), rowH = 24, top = 22;
+  const H = top + rows.length * rowH + 8;
+  const max = opt.max || Math.min(1, Math.max(0.05, ...rows.map(r => r.hi ?? r.value ?? 0)) * 1.12);
+  const x = v => labW + 10 + (W - labW - 150) * (v / max);
+  const s = sv('svg', { width: '100%', viewBox: `0 0 ${W} ${H}`, style: `max-width:${W}px` });
+  for (let i = 0; i <= 4; i++) { const v = max * i / 4, xx = x(v);
+    s.append(sv('line', { x1: xx, x2: xx, y1: top - 6, y2: H - 4, class: 'grid' }));
+    s.append(sv('text', { x: xx, y: 12, 'text-anchor': 'middle', class: 'muted' }, pct(v, max < .1 ? 1 : 0))); }
+  rows.forEach((r, i) => { const y = top + i * rowH + rowH / 2;
+    if (r.head) { s.append(sv('text', { x: 0, y: y + 4, 'font-weight': 600 }, r.label)); return; }
+    s.append(sv('text', { x: r.indent ? 14 : 0, y: y + 4, class: r.indent ? 'muted' : '' }, r.label));
+    if (r.value == null) return;
+    if (r.lo != null && r.hi != null) s.append(sv('line', { x1: x(r.lo), x2: x(r.hi), y1: y, y2: y, stroke: 'var(--accent)', 'stroke-width': 2, opacity: .45 }));
+    s.append(sv('circle', { cx: x(r.value), cy: y, r: 4.5, fill: 'var(--accent)' }));
+    s.append(sv('text', { x: x(r.hi ?? r.value) + 8, y: y + 4, class: 'muted' }, pct(r.value) + (r.n != null ? `  (n=${num(r.n)})` : ''))); });
+  box.append(s);
+}
+
+function healthChart(box) {
+  const h = D.health; box.innerHTML = '';
+  if (!h.length) { box.append(el('div', { cls: 'empty', text: 'No rounds yet.' })); return; }
+  const W = Math.max(box.clientWidth || 900, 360), H = 210, L = 34, R = 44, T = 14, B = 34;
+  const bw = (W - L - R) / h.length, ymax = Math.max(7, ...h.map(d => d.main));
+  const y = v => T + (H - T - B) * (1 - v / ymax), yp = v => T + (H - T - B) * (1 - (Math.max(0.75, v) - 0.75) / 0.25);
+  const s = sv('svg', { width: '100%', viewBox: `0 0 ${W} ${H}`, style: `max-width:${W}px` });
+  [0, 2, 4, 6].forEach(v => { s.append(sv('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), class: 'grid' }));
+    s.append(sv('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end', class: 'muted' }, v)); });
+  [0.75, 0.85, 0.95, 1].forEach(v => s.append(sv('text', { x: W - R + 6, y: yp(v) + 4, class: 'muted' }, pct(v, 0))));
+  s.append(sv('line', { x1: L, x2: W - R, y1: y(6), y2: y(6), stroke: 'var(--muted)', 'stroke-dasharray': '4 4' }));
+  h.forEach((d, i) => { const x0 = L + i * bw;
+    const r = sv('rect', { x: x0 + bw * .18, width: bw * .64, y: y(d.main), height: y(0) - y(d.main), fill: d.main >= 6 ? 'var(--s1)' : 'var(--s2)', rx: 2 });
+    r.append(sv('title', {}, `${d.day}: ${d.main} main rounds, ${d.hourly} hourly, ${pct(d.ok_share)} ok`)); s.append(r);
+    if (h.length <= 31 && (i % Math.ceil(h.length / 16) === 0)) s.append(sv('text', { x: x0 + bw / 2, y: H - 14, 'text-anchor': 'middle', class: 'muted' }, d.day)); });
+  const pts = h.map((d, i) => d.ok_share == null ? null : [L + i * bw + bw / 2, yp(d.ok_share)]).filter(Boolean);
+  if (pts.length) s.append(sv('polyline', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: 'var(--s3)', 'stroke-width': 2 }));
+  box.append(s);
+  box.append(el('div', { cls: 'legend' }, [el('span', {}, [el('i', { style: 'background:var(--s1)' }), 'main rounds (full day)']),
+    el('span', {}, [el('i', { style: 'background:var(--s2)' }), 'fewer than 6 (first/last day or missed rounds)']),
+    el('span', {}, [el('i', { style: 'background:var(--s3)' }), 'share of fetches ok (right axis, 75–100%)'])]));
+}
+
+function lineChart(box, series, point) {
+  box.innerHTML = '';
+  if (!series.length) { box.append(el('div', { cls: 'empty', text: 'Run "python run.py simulate" to fill this tab.' })); return; }
+  const W = Math.max(box.clientWidth || 900, 360), H = 320, L = 52, R = 18, T = 14, B = 42;
+  const all = series.flatMap(s => s.pts).concat(point ? [point] : []);
+  const xmax = Math.max(...all.map(p => p[0])) * 1.08, ymax = Math.max(0.01, ...all.map(p => p[1])) * 1.12;
+  const x = v => L + (W - L - R) * v / xmax, y = v => T + (H - T - B) * (1 - v / ymax);
+  const s = sv('svg', { width: '100%', viewBox: `0 0 ${W} ${H}`, style: `max-width:${W}px` });
+  for (let i = 0; i <= 4; i++) { const v = ymax * i / 4; s.append(sv('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), class: 'grid' }));
+    s.append(sv('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end', class: 'muted' }, pct(v, ymax < 0.05 ? 2 : 0)));
+    const xv = xmax * i / 4; s.append(sv('text', { x: x(xv), y: H - 24, 'text-anchor': 'middle', class: 'muted' }, xv.toFixed(1))); }
+  s.append(sv('text', { x: (L + W - R) / 2, y: H - 6, 'text-anchor': 'middle', class: 'muted' }, 'requests per resource per day'));
+  series.forEach((se, k) => { const p = se.pts.slice().sort((a, b) => a[0] - b[0]);
+    s.append(sv('polyline', { points: p.map(q => `${x(q[0])},${y(q[1])}`).join(' '), fill: 'none', stroke: COLORS[k], 'stroke-width': se.name === 'd_hybrid' ? 2.5 : 2, 'stroke-dasharray': se.name === 'd_hybrid' ? '6 4' : 'none' }));
+    p.forEach(q => { const c = sv('circle', { cx: x(q[0]), cy: y(q[1]), r: 3.5, fill: COLORS[k] });
+      c.append(sv('title', {}, `${se.name} ${q[2]}: ${pct(q[1])} stale, ${q[0].toFixed(2)} req/day`)); s.append(c); }); });
+  if (point) { const t = sv('text', { x: x(point[0]), y: y(point[1]) + 6, 'text-anchor': 'middle', 'font-size': 20 }, '★');
+    t.append(sv('title', {}, `obey headers: ${pct(point[1])} stale, ${point[0].toFixed(2)} req/day`)); s.append(t); }
+  box.append(s);
+}
+
+function table(box, cols, rows, opt = {}) {
+  box.innerHTML = '';
+  if (!rows.length) { box.append(el('div', { cls: 'empty', text: opt.empty || 'No data yet.' })); return; }
+  let sortK = opt.sort || null, dir = -1;
+  const t = el('table'), th = el('thead'), tb = el('tbody'); t.append(th, tb); box.append(t);
+  const hr = el('tr'); th.append(hr);
+  cols.forEach(c => { const h = el('th', { text: c.label }); h.onclick = () => { dir = sortK === c.key ? -dir : -1; sortK = c.key; draw(); }; hr.append(h); });
+  function draw() { tb.innerHTML = '';
+    const r = sortK ? rows.slice().sort((a, b) => { const A = a[sortK], B = b[sortK];
+      if (A == null) return 1; if (B == null) return -1; return (A > B ? 1 : A < B ? -1 : 0) * dir; }) : rows;
+    r.slice(0, opt.limit || 500).forEach(row => { const tr = el('tr');
+      cols.forEach(c => { const v = row[c.key]; const td = el('td', { cls: c.cls || '' });
+        if (c.render) td.append(c.render(v, row)); else td.textContent = c.fmt ? c.fmt(v) : (v ?? '–');
+        if (c.cls === 'url') td.title = v ?? ''; tr.append(td); });
+      if (opt.onClick) { tr.style.cursor = 'pointer'; tr.onclick = () => { tb.querySelectorAll('tr').forEach(x => x.classList.remove('pick')); tr.classList.add('pick'); opt.onClick(row); }; }
+      tb.append(tr); }); }
+  draw();
+}
+const PCTKEY = /share|rate|agreement|staleness|obey|fixed|poisson|hybrid|error/i;
+function genericTable(box, rows) { if (!rows.length) return table(box, [], []);
+  const cols = Object.keys(rows[0]).map(k => ({ key: k, label: nice(k),
+    fmt: v => typeof v !== 'number' ? (v ?? '–') : (PCTKEY.test(k) && !/per_day/.test(k) && Math.abs(v) <= 1) ? pct(v) : Number.isInteger(v) ? num(v) : v.toFixed(3) }));
+  table(box, cols, rows); }
+
+// render 
+function render() {
+  const m = D.meta;
+  $('#subtitle').textContent = `Generated ${m.generated} · ${m.days} days collected (${m.first || '–'} to ${m.last || '–'}) · Tranco list ${m.tranco || '–'} · theta = ${m.theta}`;
+  [['Active sites', num(m.sites)], ['Resources', num(m.resources)], ['Fetches', num(m.fetches)],
+   ['Main rounds', num(m.main_rounds)], ['Days collected', m.days], ['Fetches ok', pct(m.ok_share)],
+   ['Consecutive pairs', num(m.pairs)], ['Excluded candidates', num(m.excluded)]]
+    .forEach(([l, v]) => $('#kpis').append(el('div', { cls: 'kpi' }, [el('div', { cls: 'v', text: v }), el('div', { cls: 'l', text: l })])));
+  healthChart($('#health'));
+
+  const pres = D.presence.filter(r => r.group_by === 'all');
+  dotWhisker($('#presence'), pres.map(r => ({ label: r.description, value: r.value, lo: r.ci_low, hi: r.ci_high })), { max: 1 });
+
+  const groups = [...new Set(D.rates.map(r => r.group_by))];
+  groups.forEach(g => $('#rateGroup').append(el('option', { value: g, text: g === 'all' ? 'nothing (all resources)' : nice(g) })));
+  const drawRates = () => { const g = $('#rateGroup').value, rows = [];
+    [...new Set(D.rates.map(r => r.rate))].forEach(rate => { const rs = D.rates.filter(r => r.rate === rate && r.group_by === g);
+      if (g === 'all') rs.forEach(r => rows.push({ label: nice(rate), value: r.value, lo: r.ci_low, hi: r.ci_high, n: r.pairs }));
+      else { rows.push({ head: true, label: nice(rate) }); rs.forEach(r => rows.push({ indent: true, label: String(r.group), value: r.value, lo: r.ci_low, hi: r.ci_high, n: r.pairs })); } });
+    dotWhisker($('#rates'), rows); };
+  $('#rateGroup').onchange = drawRates; drawRates();
+
+  [...new Set(D.rq2.map(r => r.group_by))].forEach(g => $('#rq2Group').append(el('option', { value: g, text: g === 'all' ? 'nothing (all HTML)' : nice(g) })));
+  const drawRq2 = () => { const g = $('#rq2Group').value, rows = [];
+    [...new Set(D.rq2.map(r => r.theta))].forEach(th => { const rs = D.rq2.filter(r => r.theta === th && r.group_by === g);
+      if (g === 'all') rs.forEach(r => rows.push({ label: `theta = ${th}`, value: r.share_meaningful, lo: r.ci_low, hi: r.ci_high, n: r.byte_changes }));
+      else { rows.push({ head: true, label: `theta = ${th}` }); rs.forEach(r => rows.push({ indent: true, label: String(r.group), value: r.share_meaningful, lo: r.ci_low, hi: r.ci_high, n: r.byte_changes })); } });
+    dotWhisker($('#rq2chart'), rows); };
+  $('#rq2Group').onchange = drawRq2; drawRq2();
+
+  // categories heat table
+  const types = [...new Set(D.categories.map(r => r.rtype))].sort();
+  const CATS = ['strong_etag_inconsistency', 'missed_change', 'allowed_weak_etag', 'unnecessary_redownload', 'noisy_last_modified', 'consistent'];
+  const ct = el('table'), hr = el('tr', {}, [el('th', { text: 'Category' })]); types.forEach(t => hr.append(el('th', { text: t }))); hr.append(el('th', { text: 'all' }));
+  ct.append(el('thead', {}, hr)); const tb = el('tbody'); ct.append(tb);
+  const tot = {}; types.forEach(t => tot[t] = D.categories.filter(r => r.rtype === t).reduce((a, r) => a + r.n, 0));
+  const all = Object.values(tot).reduce((a, b) => a + b, 0);
+  CATS.forEach(c => { const tr = el('tr', {}, [el('td', { text: nice(c) })]);
+    const cell = (n, d) => { const v = d ? n / d : 0, td = el('td', { text: pct(v, 2) }); td.title = `${num(n)} of ${num(d)} pairs`;
+      if (c !== 'consistent') td.style.background = `color-mix(in srgb, var(--accent) ${Math.min(60, Math.sqrt(v) * 160)}%, transparent)`; return td; };
+    types.forEach(t => { const r = D.categories.find(x => x.rtype === t && x.category === c); tr.append(cell(r ? r.n : 0, tot[t])); });
+    tr.append(cell(D.categories.filter(x => x.category === c).reduce((a, r) => a + r.n, 0), all)); tb.append(tr); });
+  $('#cattable').innerHTML = ''; $('#cattable').append(ct);
+
+  // RQ3
+  const g3 = [...new Set(D.rq3.map(r => r.group))].sort((a, b) => (a === 'html' ? -1 : b === 'html' ? 1 : a < b ? -1 : 1)); g3.forEach(g => $('#rq3Group').append(el('option', { value: g, text: g })));
+  const drawRq3 = () => { const g = $('#rq3Group').value, d = D.rq3.filter(r => r.group === g);
+    const pol = ['b_fixed', 'c_poisson', 'd_hybrid'];
+    const series = pol.map(p => ({ name: p, pts: d.filter(r => r.policy === p).map(r => [r.requests_per_day, r.staleness_mid, r.param]) })).filter(s => s.pts.length);
+    const a = d.find(r => r.policy === 'a_obey_headers');
+    lineChart($('#rq3chart'), series, a ? [a.requests_per_day, a.staleness_mid] : null);
+    $('#rq3legend').innerHTML = ''; series.forEach((s, k) => $('#rq3legend').append(el('span', {}, [el('i', { style: `background:${COLORS[k]}` }), nice(s.name)])));
+    if (a) $('#rq3legend').append(el('span', { text: '★ a obey headers' })); };
+  $('#rq3Group').onchange = drawRq3; drawRq3();
+  genericTable($('#rq3eq'), D.rq3_equal); genericTable($('#t4'), D.t4);
+
+  // site explorer
+  const labelTag = v => el('span', { cls: 'tag ' + (v === 'reliable' ? 'reliable' : v === 'unreliable' ? 'unreliable' : v === 'mostly reliable' ? 'mostly' : ''), text: v });
+  const siteCols = [{ key: 'domain', label: 'Domain' }, { key: 'tranco_rank', label: 'Rank', fmt: num }, { key: 'rank_group', label: 'Group' },
+    { key: 'resources', label: 'Resources' }, { key: 'pairs', label: 'Pairs', fmt: num }, { key: 'real_changes', label: 'Real changes', fmt: num },
+    { key: 'problems', label: 'Problems', fmt: num }, { key: 'problem_rate', label: 'Problem rate', fmt: v => pct(v, 2) },
+    { key: 'redownloads', label: 'Unneeded re-downloads', fmt: num }, { key: 'noisy_lm', label: 'Noisy LM', fmt: num },
+    { key: 'etag', label: 'Has ETag', fmt: v => pct(v, 0) }, { key: 'lm', label: 'Has LM', fmt: v => pct(v, 0) },
+    { key: 'label', label: 'Label', render: labelTag }];
+  const resCols = [{ key: 'url', label: 'URL', cls: 'url' }, { key: 'type', label: 'Type' }, { key: 'fingerprinted', label: 'Fingerprinted', fmt: v => v ? 'yes' : 'no' },
+    { key: 'pairs', label: 'Pairs' }, { key: 'byte_changes', label: 'Byte changes' }, { key: 'real_changes', label: 'Real changes' },
+    { key: 'strong_etag_inconsistency', label: 'Strong-ETag incons.' }, { key: 'missed_change', label: 'Missed' },
+    { key: 'unnecessary_redownload', label: 'Unneeded re-dl' }, { key: 'noisy_last_modified', label: 'Noisy LM' },
+    { key: 'etag', label: 'ETag', fmt: v => pct(v, 0) }, { key: 'weak', label: 'Weak', fmt: v => pct(v, 0) }, { key: 'lm', label: 'LM', fmt: v => pct(v, 0) },
+    { key: 'lifetime', label: 'Avg lifetime (h)', fmt: v => v == null ? '–' : (v / 3600).toFixed(1) }];
+  const drawSites = () => { const q = $('#siteSearch').value.trim().toLowerCase(), lab = $('#siteLabel').value;
+    const rows = D.sites.filter(s => (!q || s.domain.includes(q)) && (!lab || s.label === lab));
+    $('#siteCount').textContent = `${num(rows.length)} sites${rows.length > 500 ? ' (first 500 shown; sort or search to narrow)' : ''}`;
+    table($('#siteTable'), siteCols, rows, { sort: 'problems', limit: 500, onClick: s => {
+      $('#resTitle').textContent = `Resources of ${s.domain}`;
+      table($('#resTable'), resCols, D.resources.filter(r => r.site_id === s.id), { sort: 'pairs' }); } }); };
+  $('#siteSearch').oninput = drawSites; $('#siteLabel').onchange = drawSites; drawSites();
+
+  // data quality
+  Object.entries(D.quality).forEach(([title, rows]) => { const box = el('div');
+    $('#qualityCards').append(el('div', { cls: 'card' }, [el('h2', { text: title }), box])); genericTable(box, rows); });
+}
+
+render();
+let start = 'overview'; try { start = localStorage.getItem('tab') || 'overview'; } catch (e) {}
+show(TABS.some(t => t[0] === start) ? start : 'overview');
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { $('#kpis').innerHTML = ''; $('#qualityCards').innerHTML = '';
+  ['#rateGroup', '#rq2Group', '#rq3Group'].forEach(s => { const v = $(s).value; $(s).dataset.keep = v; $(s).innerHTML = ''; });
+  render(); ['#rateGroup', '#rq2Group', '#rq3Group'].forEach(s => { if ($(s).dataset.keep) { $(s).value = $(s).dataset.keep; $(s).onchange(); } }); }, 250); });
+</script>
+</body>
+</html>

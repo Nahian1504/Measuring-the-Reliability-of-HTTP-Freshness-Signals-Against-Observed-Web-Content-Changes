@@ -45,3 +45,11 @@ def test_poisson_interval():
     assert poisson_interval(info, 0.9, C) == 4 * H           
     assert poisson_interval(info, 0.5, C) == pytest.approx(-np.log(0.5) * 86400)  
     assert poisson_interval({"X": 0, "T": 14 * 86400.0}, 0.5, C) <= 168 * H
+
+
+def test_group_of_handles_missing_content_type():
+    from freshness.simulator import group_of
+    assert group_of("script", 0, float("nan")) == "other"
+    assert group_of("script", 0, None) == "other"
+    assert group_of("homepage", 0, float("nan")) == "html"
+    assert group_of("script", 1, "application/javascript") == "fingerprinted"

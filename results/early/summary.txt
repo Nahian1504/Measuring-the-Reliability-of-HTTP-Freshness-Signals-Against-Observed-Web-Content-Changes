@@ -1,0 +1,32 @@
+Sites: 2000   Resources: 11441   Fetches: 704797
+Main rounds: 57 over 9.3 days
+
+RQ1 - error rates (all resources, 95% site-level bootstrap interval):
+  etag_false_change                4.71%  [4.06%, 5.36%]  (14272/302759 pairs) - ETag changed but bytes did not (share of unchanged pairs)
+  strong_etag_missed_change        8.50%  [5.35%, 12.13%]  (1877/22071 pairs) - Strong ETag unchanged but bytes changed (share of changed pairs)
+  weak_etag_missed_meaningful      9.49%  [4.54%, 15.03%]  (462/4868 pairs) - Weak ETag unchanged but a meaningful change happened
+  lm_false_change                 13.50%  [12.42%, 14.64%]  (52015/385418 pairs) - Last-Modified changed without a meaningful change
+  lm_missed_change                 6.71%  [4.03%, 9.90%]  (617/9189 pairs) - Last-Modified unchanged but a meaningful change happened
+  cc_early_change                  4.42%  [3.60%, 5.17%]  (10503/237655 pairs) - Changed while Cache-Control said it was still fresh
+
+RQ1 - signal presence (all fetches):
+  has_etag                        55.72%  [54.32%, 57.04%]
+  has_weak_etag                   50.29%  [48.24%, 52.37%]
+  has_last_modified               63.70%  [62.46%, 64.85%]
+  lm_uninformative                 5.71%  [4.99%, 6.49%]
+  has_cache_control               78.34%  [76.90%, 79.78%]
+  has_lifetime                    77.47%  [75.94%, 78.96%]
+  no_store_or_no_cache            15.35%  [14.29%, 16.30%]
+
+RQ2 - share of HTML byte changes that are meaningful:
+  theta=0.90:  10.61%  [9.57%, 11.68%]  (18834/177573)
+  theta=0.95:  11.69%  [10.59%, 12.77%]  (20754/177573)
+  theta=0.98:  12.58%  [11.38%, 13.77%]  (22330/177573)
+
+Pair categories (main rounds):
+  consistent                   562181
+  noisy_last_modified          40516
+  unnecessary_redownload       14272
+  strong_etag_inconsistency    1877
+  allowed_weak_etag            1071
+  missed_change                540

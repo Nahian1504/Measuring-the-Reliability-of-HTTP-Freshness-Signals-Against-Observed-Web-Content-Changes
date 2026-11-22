@@ -1,0 +1,7 @@
+rtype,allowed_weak_etag,consistent,missed_change,noisy_last_modified,strong_etag_inconsistency,unnecessary_redownload
+article,1080,230068,188,35492,1647,4314
+feed,0,27002,571,548,249,743
+homepage,655,157444,10,20201,1016,2292
+image,0,125951,46,1976,136,3594
+script,0,246669,28,5939,2,8430
+stylesheet,0,126238,41,2962,0,4613

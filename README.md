@@ -39,6 +39,7 @@ On macOS/Linux use `python3.12 -m venv .venv` and `source .venv/bin/activate`.
 | `python run.py simulate` | RQ3 policies and the T4 check | M6 |
 | `python run.py all` | pairs + analyze + simulate | M5, M6 |
 | `python run.py spotcheck` / `spotcheck-score` | 50-pair manual check of the detector | M4 |
+| `python run.py dashboard` | builds `results/dashboard.html`, the interactive results dashboard (T5) | T5 |
 | `python run.py export` | CSV files to publish (headers, hashes, metrics — no page text) | – |
 | `python run.py testserver` | local test server with known changes and faults | M7 |
 
@@ -63,6 +64,7 @@ freshness/
   pairs.py     M5  signal classifier (flags B, M, E, L and the Table 1 categories)
   analysis.py  M5  analyzer (RQ1, RQ2, bootstrap intervals, figures)
   simulator.py M6  trace simulator (four policies, staleness and cost)
+  dashboard.py T5  results dashboard (one self-contained HTML file)
   testserver.py M7 local test server
   db.py            SQLite schema (Figure 2)
 tests/               CT1–CT6 and T4 tests (pytest)
