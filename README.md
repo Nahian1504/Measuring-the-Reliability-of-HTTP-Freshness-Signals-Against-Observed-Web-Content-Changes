@@ -5,6 +5,8 @@ HTTP freshness signals (Cache-Control, ETag, Last-Modified), detects when their 
 changes, measures how often the signals are wrong, and simulates what wrong signals cost caches
 and crawlers.
 
+**Live dashboard:** [Open the dashboard](https://nahian1504.github.io/Measuring-the-Reliability-of-HTTP-Freshness-Signals-Against-Observed-Web-Content-Changes/results/nov22/dashboard.html) 
+
 ## Requirements
 
 * Windows 10/11, macOS or Linux, Python **3.12**
