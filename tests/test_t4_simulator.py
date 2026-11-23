@@ -53,3 +53,11 @@ def test_group_of_handles_missing_content_type():
     assert group_of("script", 0, None) == "other"
     assert group_of("homepage", 0, float("nan")) == "html"
     assert group_of("script", 1, "application/javascript") == "fingerprinted"
+
+def test_fixed_4h_fetches_every_round_even_with_drift():
+    drift = np.array([0, -120, 180, -60, 240, 0])
+    t = np.arange(6) * 4 * H + drift
+    tr = Trace(1, "html", t.astype(float), np.array([0, 1, 2, 3, 4, 5]), [None] * 6, [None] * 6, [None] * 6, np.full(6, 1000.0))
+    r = replay(tr, "interval", 4 * H, conditional=False)
+    assert r["stale_end"] == 0                 
+    assert r["req_per_day"] == pytest.approx(5 / ((t[-1] - t[0]) / 86400))

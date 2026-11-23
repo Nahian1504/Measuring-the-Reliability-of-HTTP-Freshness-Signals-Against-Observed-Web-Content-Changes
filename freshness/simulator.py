@@ -8,6 +8,7 @@ import pandas as pd
 
 log = logging.getLogger("freshness")
 HEADER_BYTES = 400  
+SLACK_S = 3600
 
 
 @dataclass
@@ -90,7 +91,7 @@ def replay(tr: Trace, mode: str, interval: float | None, conditional: bool) -> d
 
     j_life = 0
     for k in range(n):
-        if k > 0 and t[k] >= next_due() - 1:   
+        if k > 0 and t[k] >= next_due() - SLACK_S:   
             req += 1
             not_modified = False
             if conditional:
